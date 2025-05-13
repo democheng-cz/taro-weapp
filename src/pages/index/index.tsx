@@ -1,86 +1,68 @@
-import {useState} from 'react'
-import {View} from '@tarojs/components'
-import {Button, Cell, ConfigProvider, Dialog, TextArea} from '@nutui/nutui-react-taro'
-import enUS from '@nutui/nutui-react-taro/dist/locales/en-US'
-import zhCN from '@nutui/nutui-react-taro/dist/locales/zh-CN'
-import Taro, {useLoad, useReady, useDidHide, useDidShow, useUnload} from "@tarojs/taro";
+import type { PickerOption } from "@nutui/nutui-react-taro/dist/types/index"
+import { useState } from "react"
+import { DatePicker, Cell } from "@nutui/nutui-react-taro"
+import "./index.scss"
+import { ShiftCalculator } from "@/utils/shiftCalculactor"
+import { generateAndDownloadExcel } from "@/utils/xlsx/excelUtils"
+import dayjs from "dayjs"
 
-
-import './index.scss'
-
+const shiftCalculator = new ShiftCalculator()
 function Index() {
+	const [show, setShow] = useState(false)
+	const startDate = new Date(2000, 1, 1)
+	const endDate = new Date(2100, 12, 31)
+	const defaultValue = new Date()
+	const confirm = (values: PickerOption[]) => {
+		const date = values
+			.slice(0, 3)
+			.map(value => value.value)
+			.join("-")
+		const time = values
+			.slice(3)
+			.map(value => value.value)
+			.join(":")
+		const dateTime = dayjs(`${date} ${time}`)
+		const result = shiftCalculator.calculateOverlap(
+			dateTime.format("YYYY-MM-DD HH:mm:ss"),
+			20
+		)
+		console.log(result)
 
-  const [locale, setLocale] = useState(zhCN)
-  const localeKey = locale === zhCN ? 'zhCN' : 'enUS'
-  const [visible, setVisible] = useState(false)
-  const [translated] = useState({
-    zhCN: {
-      welcome: '欢迎使用 NutUI React 开发 Taro 多端项目。',
-      button: '使用英文',
-      open: '点击打开',
-    },
-    enUS: {
-      welcome: 'Welcome to use NutUI React to develop Taro multi-terminal projects.',
-      button: 'Use Chinese',
-      open: 'Click Me',
-    },
-  })
-  const handleSwitchLocale = () => {
-    setLocale(locale === zhCN ? enUS : zhCN)
-  }
-
-  useLoad((callback) => {
-    console.log("IndexPage useLoad", callback);
-  });
-
-  useDidShow((callback) => {
-    console.log('IndexPage useDidShow', callback);
-  })
-
-  useReady(() => {
-    console.log('IndexPage useReady')
-
-    Taro.showShareMenu({
-      withShareTicket: true,
-      showShareItems: ['wechatFriends', 'wechatMoment', 'shareAppMessage', 'shareTimeline']
-    })
-  })
-
-
-  useDidHide(() => {
-    console.log('IndexPage useDidHide');
-  })
-
-  useUnload(() => {
-    console.log('IndexPage useUnload');
-  })
-
-  return (
-    <ConfigProvider locale={locale}>
-      <View className='nutui-react-demo'>
-        <View>{translated[localeKey].welcome}</View>
-        <Cell title={
-          <View>
-            <Button size='mini' type='primary' onClick={handleSwitchLocale}>
-              {translated[localeKey].button}
-            </Button>
-            <Button type='success' onClick={() => setVisible(true)}>
-              {translated[localeKey].open}
-            </Button>
-            <Dialog
-              visible={visible}
-              onConfirm={() => setVisible(false)}
-              onCancel={() => setVisible(false)}
-            >
-              {translated[localeKey].welcome}
-            </Dialog>
-            <TextArea disabled showCount maxLength={20}/>
-          </View>
-        }
-        />
-      </View>
-    </ConfigProvider>
-  )
+		const data = [
+			{
+				cycle: "周期",
+				workPeriod: "工作时间",
+				restPeriod: "休息时间",
+				restDays: "休息天数",
+				weekendOverlap: "周末重叠",
+				isFullWeekend: "是否全周末",
+			},
+			...result.map(item => ({
+				cycle: item.cycle,
+				workPeriod: item.workPeriod,
+				restPeriod: item.restPeriod,
+				restDays: item.restDays,
+				weekendOverlap: item.weekendOverlap,
+				isFullWeekend: item.isFullWeekend,
+			})),
+		]
+		generateAndDownloadExcel(data, "测试数据")
+	}
+	return (
+		<>
+			<Cell title="日期时间选择" onClick={() => setShow(true)} />
+			<DatePicker
+				title="日期时间选择"
+				startDate={startDate}
+				endDate={endDate}
+				defaultValue={defaultValue}
+				visible={show}
+				type="datetime"
+				onClose={() => setShow(false)}
+				onConfirm={values => confirm(values)}
+			/>
+		</>
+	)
 }
 
 export default Index
