@@ -85,6 +85,16 @@ export default defineConfig<"webpack5">(async (merge, { command, mode }) => {
 					},
 				})
 			},
+			sourceMapType: "source-map",
+			output: {
+				devtoolModuleFilenameTemplate: info => {
+					// 只让 src 文件夹下的代码生成源码映射
+					if (info.resourcePath.includes("/src/")) {
+						return `webpack:///${info.resourcePath}`
+					}
+					return `webpack:///./${info.resourcePath}`
+				},
+			},
 		},
 		h5: {
 			publicPath: "/",
@@ -104,15 +114,25 @@ export default defineConfig<"webpack5">(async (merge, { command, mode }) => {
 					config: {},
 				},
 				cssModules: {
-					enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
+					enable: false,
 					config: {
-						namingPattern: "module", // 转换模式，取值为 global/module
+						namingPattern: "module",
 						generateScopedName: "[name]__[local]___[hash:base64:5]",
 					},
 				},
 			},
 			webpackChain(chain) {
 				chain.resolve.plugin("tsconfig-paths").use(TsconfigPathsPlugin)
+			},
+			devServer: {
+				port: 3000,
+				host: "localhost",
+				open: true,
+				hot: true,
+				historyApiFallback: true,
+				headers: {
+					"Access-Control-Allow-Origin": "*",
+				},
 			},
 		},
 		rn: {

@@ -1,9 +1,9 @@
-import type { PickerOption } from "@nutui/nutui-react-taro/dist/types/index"
+import type { PickerOption } from "@nutui/nutui-react-taro"
 import { useState } from "react"
 import { DatePicker, Cell } from "@nutui/nutui-react-taro"
 import "./index.scss"
 import { ShiftCalculator } from "@/utils/shiftCalculactor"
-import { generateAndDownloadExcel } from "@/utils/xlsx/excelUtils"
+import { exportExcel } from "@/utils/xlsx/excelUtils"
 import dayjs from "dayjs"
 
 const shiftCalculator = new ShiftCalculator()
@@ -26,27 +26,24 @@ function Index() {
 			dateTime.format("YYYY-MM-DD HH:mm:ss"),
 			20
 		)
-		console.log(result)
 
-		const data = [
-			{
-				cycle: "周期",
-				workPeriod: "工作时间",
-				restPeriod: "休息时间",
-				restDays: "休息天数",
-				weekendOverlap: "周末重叠",
-				isFullWeekend: "是否全周末",
-			},
-			...result.map(item => ({
-				cycle: item.cycle,
-				workPeriod: item.workPeriod,
-				restPeriod: item.restPeriod,
-				restDays: item.restDays,
-				weekendOverlap: item.weekendOverlap,
-				isFullWeekend: item.isFullWeekend,
-			})),
-		]
-		generateAndDownloadExcel(data, "测试数据")
+		const data = result.reduce((acc, item) => {
+			const { month } = item
+			if (!acc[month]) {
+				acc[month + "月"] = []
+			}
+			acc[month].push({
+				周期: item.cycle,
+				工作时间: item.workPeriod,
+				休息时间: item.restPeriod,
+				休息天数: item.restDays,
+				周末重叠: item.weekendOverlap,
+				是否全周末: item.isFullWeekend,
+			})
+			return acc
+		}, {})
+
+		exportExcel(data, "测试数据5")
 	}
 	return (
 		<>
