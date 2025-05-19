@@ -12,17 +12,14 @@ interface ShiftResult {
 // 快速排序
 
 export class ShiftCalculator {
-	private startDate: Date
 	private weekdays: string[]
 	private workDaysPerCycle: number
 	private restDaysPerCycle: number
-	private cycleDays: number
 
 	constructor() {
 		this.weekdays = ["日", "一", "二", "三", "四", "五", "六"]
 		this.workDaysPerCycle = 5
 		this.restDaysPerCycle = 2
-		this.cycleDays = this.workDaysPerCycle + this.restDaysPerCycle
 	}
 
 	private getDateAfterDays(startDate: Dayjs, days: number): Dayjs {
