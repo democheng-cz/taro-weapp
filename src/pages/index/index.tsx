@@ -34,8 +34,8 @@ function Index() {
 		const result = shiftCalculator.calculateOverlap(startTime, Number(cycle))
 
 		const data = result.reduce((acc, item) => {
-			const { month } = item
-			const key = `${month}月`
+			const { month, year } = item
+			const key = `${year}年-${month}月`
 			if (!acc[key]) {
 				acc[key] = []
 			}
@@ -43,9 +43,8 @@ function Index() {
 				周期: item.cycle,
 				工作时间: item.workPeriod,
 				休息时间: item.restPeriod,
-				休息天数: item.restDays,
-				周末重叠: item.weekendOverlap,
-				是否全周末: item.isFullWeekend,
+				周末重叠数: item.weekendOverlap,
+				是否全周末: item.isFullWeekend ? "是" : "否",
 			})
 			return acc
 		}, {})

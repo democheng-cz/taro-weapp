@@ -7,6 +7,7 @@ interface ShiftResult {
 	weekendOverlap: number
 	isFullWeekend: boolean
 	month: number
+	year: number
 }
 
 // 快速排序
@@ -61,9 +62,8 @@ export class ShiftCalculator {
 			const restDays: string[] = []
 			let weekendOverlap = 0
 			for (let d = restStart; d.isBefore(restEnd.add(1)); d = d.add(1, "day")) {
-				// restDays.push(this.formatDate(new Date(d)))
 				restDays.push(this.formatDate(d))
-				if (d.day() === 0 || d.day() === 6) {
+				if (d.day() === 0 || d.day() === 5) {
 					weekendOverlap++
 				}
 			}
@@ -82,6 +82,7 @@ export class ShiftCalculator {
 				isFullWeekend:
 					weekendOverlap === 2 && restStart.day() === 5 && restEnd.day() === 0,
 				month: dayjs(workStart).month() + 1,
+				year: dayjs(workStart).year(),
 			}
 
 			results.push(result)
