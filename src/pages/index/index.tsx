@@ -49,7 +49,72 @@ function Index() {
 			return acc
 		}, {})
 
-		exportExcel(data, "小唐的排班表")
+		// 生成有具体时间的排班表
+		const data2 = result.reduce((acc, item) => {
+			const { workeTimes, month, year } = item
+			const key = `${year}年-${month}月`
+			if (!acc[key]) {
+				acc[key] = []
+			}
+			Array.from(workeTimes.entries()).forEach(([dayKey, value]) => {
+				let dKey = dayjs(dayKey)
+				let key2 = `${dKey.year()}年-${dKey.month() + 1}月`
+				if (!acc[key2]) {
+					dKey = dKey.add(1, "month")
+					key2 = `${dKey.year()}年-${dKey.month() + 1}月`
+					acc[key2] = []
+				}
+
+				// 每日工作时间段
+				const dayWorkTimes = [
+					"00:00-02:00",
+					"02:00-04:00",
+					"04:00-06:00",
+					"06:00-08:00",
+					"08:00-10:00",
+					"10:00-12:00",
+					"12:00-14:00",
+					"14:00-16:00",
+					"16:00-18:00",
+					"18:00-20:00",
+					"20:00-22:00",
+					"22:00-24:00",
+				]
+				const findItem = acc[key2]?.find(
+					item => item.日期 === dKey.format("DD")
+				)
+				if (findItem) {
+					findItem[
+						`${value.start}-${value.end}`
+					] = `${value.start}-${value.end}`
+				} else {
+					const map = dayWorkTimes.reduce((prev, curr) => {
+						if (curr === `${value.start}-${value.end}`) {
+							prev.set(curr, `${value.start}-${value.end}`)
+						}
+						return prev
+					}, new Map())
+					let res = {}
+					for (const [key, value] of map.entries()) {
+						res[key] = value
+					}
+					acc[key2].push({
+						日期: dKey.format("DD"),
+						...dayWorkTimes.reduce((prev, curr) => {
+							return {
+								...prev,
+								[curr]: res[curr] || "",
+							}
+						}, {}),
+					})
+				}
+			})
+			return acc
+		}, {})
+
+		console.log("data2", data, data2)
+		// return
+		exportExcel(data2, "小唐的排班表")
 	}
 	return (
 		<>

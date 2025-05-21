@@ -8,9 +8,8 @@ interface ShiftResult {
 	isFullWeekend: boolean
 	month: number
 	year: number
+	workeTimes: Map<string, { start: string; end: string }>
 }
-
-// 快速排序
 
 export class ShiftCalculator {
 	private weekdays: string[]
@@ -48,11 +47,27 @@ export class ShiftCalculator {
 		while (cycleCount < cyclesToCheck || (!foundFullWeekend && count < 20)) {
 			count++
 			const workStart = currentDate
+
+			let workStartTime = currentDate
+
 			// 工作4天
 			const workEnd = this.getDateAfterDays(
 				workStart,
 				this.workDaysPerCycle - 1
 			)
+
+			const workeTimes: Map<string, { start: string; end: string }> = new Map()
+			let index = 1
+			while (workStartTime.isBefore(workEnd)) {
+				const workeTime = workStartTime.add(2, "hours")
+				workeTimes.set(workStartTime.format("YYYY-MM-DD HH:mm"), {
+					start: workStartTime.format("HH:mm"),
+					end: workeTime.format("HH:mm"),
+				})
+				workStartTime = workeTime.add(index % 3 === 0 ? 8 : 6, "hours")
+				index++
+			}
+			console.log("workeTimes", workeTimes)
 
 			// 休息2天
 			const restStart = this.getDateAfterDays(workEnd, 0)
@@ -83,6 +98,7 @@ export class ShiftCalculator {
 					weekendOverlap === 2 && restStart.day() === 5 && restEnd.day() === 0,
 				month: dayjs(workStart).month() + 1,
 				year: dayjs(workStart).year(),
+				workeTimes,
 			}
 
 			results.push(result)
