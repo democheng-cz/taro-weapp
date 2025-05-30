@@ -20,6 +20,14 @@ function Index() {
 	} = useDateTimePicker()
 	// 输入的周期
 	const [cycle, setCycle] = useState("10")
+	// 周期输入框改变
+	const handleChangeCycle = (val: string) => {
+		// 如果输入的不是正整数
+		if (/^\d+$/.test(val) || val === "") {
+			setCycle(val)
+		}
+	}
+
 	// 是否正在计算
 	const [isLoading, setIsLoading] = useState(false)
 	// 计算并下载数据
@@ -133,8 +141,8 @@ function Index() {
 				<Input
 					value={cycle}
 					type="number"
-					placeholder="请输入数字"
-					onChange={e => setCycle(e)}
+					placeholder="请输入周期"
+					onChange={e => handleChangeCycle(e)}
 				/>
 				<Button
 					type="info"
