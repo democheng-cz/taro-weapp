@@ -40,7 +40,6 @@ class BaseDealXls {
 			// 添加数据并设置可爱风格
 			processedData.forEach((row, rowIndex) => {
 				const excelRow = sheet.addRow(row)
-
 				// 为每个单元格设置可爱风格
 				Object.entries(row).forEach(([key, value], colIndex) => {
 					const cell = excelRow.getCell(colIndex + 1)

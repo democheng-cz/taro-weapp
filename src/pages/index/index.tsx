@@ -117,7 +117,7 @@ function Index() {
 
 		console.log("data2", data, data2)
 		// 等待5秒
-		await new Promise(resolve => setTimeout(resolve, 5000))
+		await new Promise(resolve => setTimeout(resolve, 3000))
 		await exportExcel(data2, "小唐的排班表")
 		setIsLoading(false)
 	}
