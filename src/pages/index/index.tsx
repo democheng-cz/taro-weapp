@@ -89,7 +89,10 @@ function Index() {
 					item => item.日期 === dKey.format("DD")
 				)
 				if (findItem) {
-					findItem[`${value.start}-${value.end}`] = `上班`
+					const key = `${value.start}-${value.end}`
+					if (key === "14:00-16:00") {
+						findItem[key] = "放假"
+					} else findItem[`${value.start}-${value.end}`] = `上班`
 				} else {
 					const map = dayWorkTimes.reduce((prev, curr) => {
 						if (curr === `${value.start}-${value.end}`) {
@@ -106,7 +109,11 @@ function Index() {
 						...dayWorkTimes.reduce((prev, curr) => {
 							return {
 								...prev,
-								[curr]: res[curr] ? "上班" : "",
+								[curr]: res[curr]
+									? curr === "14:00-16:00"
+										? "放假"
+										: "上班"
+									: "",
 							}
 						}, {}),
 					})

@@ -60,6 +60,13 @@ class BaseDealXls {
 								pattern: "solid",
 								fgColor: { argb: "FFFFD1DC" }, // 温柔粉色
 							}
+						} else if (value === "放假") {
+							// 放假用浅蓝色
+							cell.fill = {
+								type: "pattern",
+								pattern: "solid",
+								fgColor: { argb: "FFD1E8FF" }, // 浅蓝色
+							}
 						} else {
 							// 其他内容用更浅的粉色
 							cell.fill = {
