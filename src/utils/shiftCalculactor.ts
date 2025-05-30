@@ -67,7 +67,6 @@ export class ShiftCalculator {
 				workStartTime = workeTime.add(index % 3 === 0 ? 8 : 6, "hours")
 				index++
 			}
-			console.log("workeTimes", workeTimes)
 
 			// 休息2天
 			const restStart = this.getDateAfterDays(workEnd, 0)
