@@ -1,5 +1,10 @@
 export default defineAppConfig({
-	pages: ["pages/index/index", "pages/my/index", "pages/functional/index"],
+	pages: [
+		"pages/home/index",
+		"pages/my/index",
+		"pages/functional/index",
+		"pages/calculateShift/index",
+	],
 	tabBar: {
 		color: "#000000",
 		position: "bottom",
@@ -7,7 +12,7 @@ export default defineAppConfig({
 		backgroundColor: "#ffffff",
 		list: [
 			{
-				pagePath: "pages/index/index",
+				pagePath: "pages/home/index",
 				text: "首页",
 				iconPath: "assets/images/tab-icons/home.png",
 				selectedIconPath: "assets/images/tab-icons/home-fill.png",
