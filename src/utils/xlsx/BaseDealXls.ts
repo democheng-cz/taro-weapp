@@ -36,14 +36,13 @@ class BaseDealXls {
 					width: 16, // 加宽列宽，让内容更舒适
 				}))
 			}
-
 			// 添加数据并设置可爱风格
 			processedData.forEach((row, rowIndex) => {
 				const excelRow = sheet.addRow(row)
 				// 为每个单元格设置可爱风格
 				Object.entries(row).forEach(([key, value], colIndex) => {
 					const cell = excelRow.getCell(colIndex + 1)
-
+					console.log("cell", cell)
 					// 设置字体
 					cell.font = {
 						name: "微软雅黑",
@@ -61,12 +60,21 @@ class BaseDealXls {
 								fgColor: { argb: "FFFFD1DC" }, // 温柔粉色
 							}
 						} else if (value === "放假") {
-							// 放假用浅蓝色
+							// 放假用薄荷绿色
 							cell.fill = {
 								type: "pattern",
 								pattern: "solid",
-								fgColor: { argb: "FFD1E8FF" }, // 浅蓝色
+								fgColor: { argb: "FFE0F5E6" }, // 清新的薄荷绿色
 							}
+						} else if (value === "休息") {
+							// 休息用天空蓝
+							cell.fill = {
+								type: "pattern",
+								pattern: "solid",
+								fgColor: { argb: "FFE6F3FF" }, // 清新的天空蓝
+							}
+							// 设置一个零宽字符, 避免空单元格的值为空，在下方交替行中被重置背景色
+							cell.value = "\u200B"
 						} else {
 							// 其他内容用更浅的粉色
 							cell.fill = {
@@ -184,6 +192,8 @@ class BaseDealXls {
 				},
 			]
 		})
+
+		return
 	}
 
 	// 生成xlsx文件的buffer

@@ -9,6 +9,8 @@ interface ShiftResult {
 	month: number
 	year: number
 	workeTimes: Map<string, { start: string; end: string }>
+	resetTimes: string[]
+	fullTimes: string[]
 }
 
 export class ShiftCalculator {
@@ -57,6 +59,7 @@ export class ShiftCalculator {
 			)
 
 			const workeTimes: Map<string, { start: string; end: string }> = new Map()
+			const fullTimes: Set<string> = new Set([])
 			let index = 1
 			while (workStartTime.isBefore(workEnd)) {
 				const workeTime = workStartTime.add(2, "hours")
@@ -64,6 +67,7 @@ export class ShiftCalculator {
 					start: workStartTime.format("HH:mm"),
 					end: workeTime.format("HH:mm"),
 				})
+				fullTimes.add(workStartTime.format("YYYY-MM-DD"))
 				workStartTime = workeTime.add(index % 3 === 0 ? 8 : 6, "hours")
 				index++
 			}
@@ -74,12 +78,22 @@ export class ShiftCalculator {
 
 			// 检查休息日是否包含周末
 			const restDays: string[] = []
+			const resetTimes: string[] = []
 			let weekendOverlap = 0
+
+			let resetIndex = 0
 			for (let d = restStart; d.isBefore(restEnd.add(1)); d = d.add(1, "day")) {
 				restDays.push(this.formatDate(d))
+				resetTimes.push(
+					resetIndex === 1
+						? `${d.format("YYYY-MM-DD")} 00:00`
+						: d.format("YYYY-MM-DD HH:mm")
+				)
+				fullTimes.add(d.format("YYYY-MM-DD"))
 				if (d.day() === 0 || d.day() === 5) {
 					weekendOverlap++
 				}
+				resetIndex++
 			}
 
 			// 记录结果
@@ -98,6 +112,8 @@ export class ShiftCalculator {
 				month: dayjs(workStart).month() + 1,
 				year: dayjs(workStart).year(),
 				workeTimes,
+				resetTimes,
+				fullTimes: Array.from(fullTimes),
 			}
 
 			results.push(result)
